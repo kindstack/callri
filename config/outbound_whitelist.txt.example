@@ -1,0 +1,30 @@
+; ============================================================================
+; OUTBOUND WHITELIST -- who this PBX is allowed to CALL.
+;
+; Format: one E.164 number per line. E.164 means "+" then country code then
+; the rest of the number, no spaces or dashes. Example: +15125551234
+;
+; Rules:
+;   - ";" starts a comment. Everything after ";" on a line is ignored.
+;     This means you can label numbers with names:
+;         +15125551234   ; Mom mobile
+;         +15125559876 ;Dad
+;   - Lines that are entirely whitespace or comment are ignored.
+;   - A single "*" on its own line means "allow ANY outbound number". This
+;     is the escape hatch -- not recommended once you're on a paid account
+;     because it disables protection against toll-fraud if someone ever
+;     compromises an extension.
+;   - Empty file (no allowed numbers) = NO outbound calls. Safe default.
+;
+; Edits take effect on the NEXT call -- no reload needed.
+;
+; On a Telnyx TRIAL, only your verified number actually works at Telnyx's
+; end anyway, so adding it here is a no-op in practice. Once you upgrade,
+; this list becomes your line of defense.
+; ============================================================================
+
+; Examples (uncomment + edit):
+; +15125551234   ; Mom mobile
+; +15555550100   ; Plumber
+
+

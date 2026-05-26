@@ -1,0 +1,42 @@
+;==============================================================================
+; pjsip_auth.conf.template -- envsubst input. Rendered into pjsip_auth.conf
+; at container start (and on `reload-env`) from .env on the host. The
+; rendered pjsip_auth.conf is gitignored.
+;
+; DO NOT EDIT the rendered pjsip_auth.conf -- it gets overwritten every
+; render. Edit .env on the host instead, then:
+;     docker exec asterisk reload-env
+;==============================================================================
+
+;------------------------------------------------------------------------------
+; TELNYX SIP CONNECTION USERNAME (extends [telnyx-reg] in pjsip.conf)
+;------------------------------------------------------------------------------
+
+[telnyx-reg](+)
+client_uri=sip:${TELNYX_USERNAME}@sip.telnyx.com
+contact_user=${TELNYX_USERNAME}
+
+;------------------------------------------------------------------------------
+; SIP PASSWORDS
+;------------------------------------------------------------------------------
+
+; --- Telnyx SIP Connection credentials ---
+[telnyx-auth]
+type=auth
+auth_type=userpass
+username=${TELNYX_USERNAME}
+password=${TELNYX_PASSWORD}
+
+; --- Extension 100 password (for the softphone to register with Asterisk) ---
+[100-auth]
+type=auth
+auth_type=userpass
+username=100
+password=${EXT_100_PASSWORD}
+
+; --- Extension 101 password ---
+[101-auth]
+type=auth
+auth_type=userpass
+username=101
+password=${EXT_101_PASSWORD}

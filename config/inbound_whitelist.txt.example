@@ -1,0 +1,37 @@
+; ============================================================================
+; INBOUND WHITELIST -- who is allowed to call this PBX.
+;
+; !!! SECURITY NOTE !!!
+; This file defaults to "*" (allow all) so inbound test calls work without
+; any extra config. ONCE you have a paid DID and care about spam/robocalls,
+; DELETE the "*" line and add specific E.164 numbers below. Otherwise this
+; PBX will ring on every junk call that hits your DID.
+;
+; Format: one E.164 number per line, matched against the inbound caller-ID
+; (CallerID(num)) presented by Telnyx. Example: +15125551234
+;
+; Rules:
+;   - ";" starts a comment. Everything after ";" on a line is ignored.
+;     Label numbers with names:
+;         +15125551234   ; Mom mobile
+;         +18005551212   ; doctor's office
+;   - Lines that are entirely whitespace or comment are ignored.
+;   - A single "*" on its own line means "allow ANY caller". Useful when
+;     you first get a DID and aren't sure who'll legitimately call you.
+;   - The token "anonymous" matches calls that arrive without caller-ID
+;     (privacy=anonymous or empty From). Add it explicitly if you want to
+;     accept those; otherwise they're blocked.
+;   - Empty file = NO inbound calls accepted.
+;
+; Edits take effect on the NEXT call -- no reload needed.
+; ============================================================================
+
+; Allow everything by default. Comment this line out and add specific
+; numbers below once you want to filter.
+*  ; allow-all sentinel -- delete or comment to start filtering
+
+; Examples:
+; +15125551234   ; Mom
+; +18005551212   ; pharmacy
+; anonymous      ; allow calls with hidden caller-ID
+

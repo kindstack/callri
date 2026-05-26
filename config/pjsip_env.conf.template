@@ -1,0 +1,21 @@
+;==============================================================================
+; pjsip_env.conf.template -- envsubst input. Rendered into pjsip_env.conf at
+; container start (and on `reload-env`) using values from the host's .env
+; file. The rendered pjsip_env.conf is gitignored.
+;
+; DO NOT EDIT the rendered pjsip_env.conf -- it gets overwritten every
+; render. Edit .env on the host instead, then:
+;     docker exec asterisk reload-env
+;==============================================================================
+
+; Public address used in outgoing SDP / Contact headers so far-end devices
+; know where to send return RTP/SIP traffic. Best practice: a DDNS hostname
+; so Asterisk re-resolves on ISP IP changes.
+[transport-udp](+)
+external_media_address=${PUBLIC_ADDRESS}
+external_signaling_address=${PUBLIC_ADDRESS}
+
+; Outbound caller-ID on Telnyx-bound calls. MUST be a DID assigned to your
+; Telnyx SIP Connection on a paid account, else 403 Forbidden.
+[telnyx-endpoint](+)
+from_user=${TELNYX_DID}

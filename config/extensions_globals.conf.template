@@ -1,0 +1,14 @@
+;==============================================================================
+; extensions_globals.conf.template -- envsubst input. Rendered into
+; extensions_globals.conf at container start (and on `reload-env`) from .env
+; on the host. The rendered file is gitignored.
+;
+; DO NOT EDIT the rendered extensions_globals.conf -- it gets overwritten
+; every render. Edit .env on the host instead, then:
+;     docker exec asterisk reload-env
+;==============================================================================
+
+[globals]
+; Caller-ID sent on outbound Telnyx calls. Must match the from_user set in
+; pjsip_env.conf so the From: header and the asserted caller-ID agree.
+TRUNK_CID="Home PBX" <${TELNYX_DID}>

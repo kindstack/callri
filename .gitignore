@@ -1,0 +1,28 @@
+# Asterisk runtime data -- directories must exist in the repo so the compose
+# bind mounts attach as the cloning user (not root-auto-created). Ignore the
+# contents, keep the dirs via .gitkeep.
+data/*
+!data/.gitkeep
+logs/*
+!logs/.gitkeep
+spool/*
+!spool/.gitkeep
+
+# Secrets — NEVER commit
+config/pjsip_auth.conf
+config/extensions_secrets.conf
+
+# Configs rendered from .env at container start (do not edit directly)
+config/pjsip_env.conf
+config/extensions_globals.conf
+
+# Phone-number whitelists (potentially PII). Seeded from .example on first run.
+config/outbound_whitelist.txt
+config/inbound_whitelist.txt
+
+# Docker overrides
+docker-compose.override.yml
+.env
+
+# macOS
+.DS_Store

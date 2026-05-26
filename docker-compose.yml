@@ -1,0 +1,58 @@
+# Asterisk PBX for Synology x86_64 with Telnyx trunk.
+#
+# Targets DSM 6 (Docker package) -- DSM 6 ships docker-compose v1.x which
+# supports compose file format up to v3.9. Compose v3.8 chosen for broadest
+# compatibility.
+#
+# IMPORTANT: We use network_mode: host so SIP/RTP work correctly behind NAT.
+#
+# Place this folder anywhere on your NAS (e.g. /volume1/docker/asterisk/) and
+# run:    sudo docker-compose up -d --build      (DSM 6, hyphenated)
+#         sudo docker compose up -d --build      (DSM 7+)
+
+version: "3.8"
+
+services:
+  asterisk:
+    build:
+      context: .
+      args:
+        TZ: America/Chicago
+    image: asterisk-telnyx:local
+    container_name: asterisk
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      TZ: America/Chicago
+    volumes:
+      # All site-specific values (passwords, DID, public address) live in
+      # .env on the host. Bind-mounted read-only so the running container
+      # always sees live edits -- `docker exec asterisk reload-env` then
+      # re-renders configs and gracefully reloads Asterisk (no dropped calls).
+      # Compose v1/v2 will create an empty DIRECTORY here on first up if .env
+      # doesn't exist on the host -- entrypoint detects that and errors out
+      # with a clear message.
+      - ./.env:/etc/asterisk/.env:ro
+      # Configs: editable from DSM File Station, reloaded with asterisk -rx 'reload'
+      - ./config:/etc/asterisk
+      # Runtime data (astdb, voicemail, recordings, AGI scripts)
+      - ./data:/var/lib/asterisk
+      # Logs (full.log, messages, queue_log, cdr-csv)
+      - ./logs:/var/log/asterisk
+      # Call spool (outbound .call files, voicemail spool)
+      - ./spool:/var/spool/asterisk
+    # Asterisk needs a few kernel capabilities for RTP scheduling; host mode handles the rest
+    cap_add:
+      - NET_BIND_SERVICE
+      - SYS_NICE
+    # Synology's default ulimits are low; bump nofile so PJSIP can open enough sockets
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    healthcheck:
+      test: ["CMD", "asterisk", "-rx", "core show version"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
