@@ -169,6 +169,7 @@ Fill in real values for:
 | `PUBLIC_ADDRESS` | DDNS hostname (recommended) or your current public IPv4 |
 | `EXT_100_PASSWORD` | strong password for SIP extension 100 (your softphone uses it) |
 | `EXT_101_PASSWORD` | strong password for SIP extension 101 (HT801 or second softphone) |
+| `INBOUND_DIAL` | *(optional)* Endpoint(s) to ring on inbound calls — Asterisk `Dial()` syntax. Defaults to `PJSIP/100&PJSIP/101` (rings both extensions in parallel). Examples: `PJSIP/100`, or `PJSIP/100&PJSIP/+15125551234@telnyx-endpoint` to fork-ring your mobile via Telnyx. |
 
 ### D. Build and start
 
@@ -685,6 +686,17 @@ can call out:
 - A line whose token is just `*` means "allow any number".
 - For inbound only, the literal `anonymous` matches calls with no caller-ID.
 
+**Match is format-agnostic for NANP numbers.** Both the inbound CID and your
+whitelist entries are normalized to E.164 (`+1NXXNXXXXXX`) before comparing,
+so on either side these all match each other:
+- `+12063009920` (E.164, recommended)
+- `12063009920` (11-digit)
+- `2063009920` (10-digit)
+
+This matters because Telnyx isn't strictly consistent — the same DID can
+deliver any of the three formats depending on the upstream carrier.
+International numbers must include the leading `+`.
+
 **Outbound match happens after normalization.** You can dial any of these
 and the PBX will check `+15125551234` against the file:
 - `+15125551234` (E.164)
@@ -769,13 +781,16 @@ What this PBX already protects against, and what it doesn't:
    gone** and any non-DID caller-ID gets rejected with `403 Forbidden`.
    (`TELNYX_DID` drives both the SIP `from_user` and the dialplan `TRUNK_CID`,
    so a single edit covers both.)
-3. Edit `config/extensions.conf` `[from-telnyx]` context to route the DID to
-   an extension, e.g.:
+3. Inbound routing is driven by `INBOUND_DIAL` in `.env` (default
+   `PJSIP/100&PJSIP/101` — rings both extensions in parallel; unregistered
+   ones are silently skipped). To override per-DID or send to a different
+   target, edit `.env` (or `config/extensions.conf` `[from-telnyx]` for
+   more elaborate routing), e.g.:
    ```
-   ; Route inbound calls to extension 100
-   exten => +1XXXXXXXXXX,1,Dial(PJSIP/100,30)
-    same => n,Hangup()
+   ; .env
+   INBOUND_DIAL=PJSIP/100&PJSIP/+15125551234@telnyx-endpoint
    ```
+   Then: `sudo docker exec asterisk reload-env`.
 4. Restart Asterisk: `sudo docker-compose restart asterisk`.
 5. (Recommended) Switch SIP transport to **TLS** on port 5061 and enable
    **SRTP** for media encryption. That's a follow-up task.

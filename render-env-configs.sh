@@ -44,7 +44,12 @@ set +a
 : "${EXT_100_PASSWORD:?required value missing in .env}"
 : "${EXT_101_PASSWORD:?required value missing in .env}"
 
-VAR_WHITELIST='${TELNYX_USERNAME} ${TELNYX_PASSWORD} ${TELNYX_DID} ${PUBLIC_ADDRESS} ${EXT_100_PASSWORD} ${EXT_101_PASSWORD}'
+# Optional values -- supply defaults for backward compat with .env files
+# created before this knob existed, so an upgrade doesn't break inbound.
+: "${INBOUND_DIAL:=PJSIP/100&PJSIP/101}"
+export INBOUND_DIAL
+
+VAR_WHITELIST='${TELNYX_USERNAME} ${TELNYX_PASSWORD} ${TELNYX_DID} ${PUBLIC_ADDRESS} ${EXT_100_PASSWORD} ${EXT_101_PASSWORD} ${INBOUND_DIAL}'
 
 for tmpl in pjsip_auth.conf pjsip_env.conf extensions_globals.conf; do
     src="/etc/asterisk/${tmpl}.template"
