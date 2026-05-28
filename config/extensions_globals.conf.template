@@ -12,3 +12,8 @@
 ; Caller-ID sent on outbound Telnyx calls. Must match the from_user set in
 ; pjsip_env.conf so the From: header and the asserted caller-ID agree.
 TRUNK_CID="Home PBX" <${TELNYX_DID}>
+; Endpoints to ring on inbound Telnyx calls. Asterisk Dial() syntax, e.g.
+; PJSIP/100, PJSIP/100&PJSIP/101, or PJSIP/100&PJSIP/+15125551234@telnyx-endpoint
+; to also ring your mobile. Unregistered endpoints are silently skipped so
+; the default safely rings whichever of 100/101 you've actually set up.
+INBOUND_DIAL=${INBOUND_DIAL}

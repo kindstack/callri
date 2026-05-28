@@ -7,8 +7,18 @@
 ; DELETE the "*" line and add specific E.164 numbers below. Otherwise this
 ; PBX will ring on every junk call that hits your DID.
 ;
-; Format: one E.164 number per line, matched against the inbound caller-ID
-; (CallerID(num)) presented by Telnyx. Example: +15125551234
+; Format: one number per line, matched against the inbound caller-ID
+; (CallerID(num)) presented by Telnyx.
+;
+; NANP normalization (US/Canada): the dialplan compares numbers AFTER
+; coercing both the inbound CID and your whitelist entries to E.164, so
+; ANY of these three formats on either side will match:
+;     +12063009920          (E.164, recommended)
+;     12063009920           (11-digit with leading 1)
+;     2063009920            (10-digit)
+; This matters because Telnyx isn't strictly consistent -- the same DID can
+; deliver "+1...", "1...", or bare 10 digits depending on the upstream carrier.
+; International numbers must include the leading '+' (no NANP guess made).
 ;
 ; Rules:
 ;   - ";" starts a comment. Everything after ";" on a line is ignored.
