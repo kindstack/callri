@@ -13,7 +13,6 @@ package (`docker` + `docker-compose` v1). Also works on DSM 7 via Container Mana
 | `entrypoint.sh` | Fixes bind-mount permissions, seeds defaults on first run, renders config templates from `.env` |
 | `render-env-configs.sh` | Shared renderer: reads `.env`, validates required values, runs `envsubst` over the three `.template` files |
 | `reload-env.sh` | Optional zero-downtime helper installed as `/usr/local/bin/reload-env`. Re-renders configs and gracefully reloads Asterisk without dropping active calls (`docker exec asterisk reload-env`). For most edits a plain `docker-compose restart asterisk` is simpler. |
-| `verify-nat.sh` | Diagnostic helper installed as `/usr/local/bin/verify-nat`. Confirms the CRLF NAT keepalive (`keep_alive_interval`) is active, shows the outbound registration refresh timer, and reports Telnyx trunk reachability (`docker exec asterisk verify-nat`). Use it when inbound calls drop after a router/ISP blip. |
 | `.env` | **Site-specific values — gitignored.** All passwords, your DID, public address, Telnyx username. Copy `.env.example` to create it. |
 | `.env.example` | Template for `.env` with placeholder values + comments |
 | `config/asterisk.conf` | Core options |

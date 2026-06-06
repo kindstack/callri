@@ -41,11 +41,9 @@ RUN mkdir -p /opt/asterisk-defaults && \
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY render-env-configs.sh /usr/local/bin/render-env-configs
 COPY reload-env.sh /usr/local/bin/reload-env
-COPY verify-nat.sh /usr/local/bin/verify-nat
 RUN chmod +x /usr/local/bin/entrypoint.sh \
              /usr/local/bin/render-env-configs \
-             /usr/local/bin/reload-env \
-             /usr/local/bin/verify-nat
+             /usr/local/bin/reload-env
 
 # SIP signaling (UDP/TCP) + RTP media range (matches rtp.conf)
 EXPOSE 5060/udp 5060/tcp 5061/tcp 10000-10100/udp
